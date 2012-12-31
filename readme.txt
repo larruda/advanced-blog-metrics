@@ -42,4 +42,4 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 == Screenshots ==
 
-1. The 5 widgets Advanced Blog Metrics provide
+1. The 5 widgets that Advanced Blog Metrics provide

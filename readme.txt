@@ -14,20 +14,23 @@ Learn more about your readers and how they react to your posts. That way you cou
 Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance by tracking the following features:
 
 Posts:
-*	Total number of posts on your blog
-*	Average number of posts per day
-*	Average number of words per post
+
+*   Total number of posts on your blog
+*   Average number of posts per day
+*   Average number of words per post
 
 Comments:
-*	Total number of comments on your blog
-*	Average number of comments per day
-*	Average number of comments per post
-*	Average number of words per comment
-*	5 authors who comment the most
-*	5 posts which generate the most comments
+
+*   Total number of comments on your blog
+*   Average number of comments per day
+*   Average number of comments per post
+*   Average number of words per comment
+*   5 authors who comment the most
+*   5 posts which generate the most comments
 
 Best time to publish:
-*	When do your posts generate the most comments?
+
+*   When do your posts generate the most comments?
 
 == Installation ==
 

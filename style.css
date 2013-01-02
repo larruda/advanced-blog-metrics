@@ -13,12 +13,12 @@
 #dashboard-widgets .table-summary tbody td.number span { border-right: 1px solid #ccc; display: inline-block; width: 100%; margin: 20px 0 }
 #dashboard-widgets .table-summary tbody td.number:last-child span { border-right: none }
 
-#dashboard_comments_per_day table { width: 100%; text-align: center; margin: 0 auto }
-#dashboard_comments_per_day table td.value { vertical-align: bottom; border-bottom: 1px solid #fff }
-#dashboard_comments_per_day table td div.pourcent { background: #ccc; margin: 0 7px; display: block }
-#dashboard_comments_per_day table td span.count { color: #989898; font-weight: bold; display: block; padding: 10px 0; font-size: 18px; margin: 0 7px }
-#dashboard_comments_per_day table th.day { color: #fff; font-weight: bold; text-align: center; width: 14% }
-#dashboard_comments_per_day table th.day span { display: block; margin: 0 7px; padding: 3px 0; background: #A3A3A3 }
-#dashboard_comments_per_day table td.max div.pourcent { background: #9ACD34 }
-#dashboard_comments_per_day table td.max span.count { color: #6A9929 }
-#dashboard_comments_per_day table th.max span { background: #7BA329 }
+#dashboard-widgets .table-cols { width: 100%; text-align: center; margin: 0 auto }
+#dashboard-widgets .table-cols td.value { vertical-align: bottom; border-bottom: 1px solid #fff }
+#dashboard-widgets .table-cols td div.pourcent { background: #ccc; margin: 0 7px; display: block }
+#dashboard-widgets .table-cols td span.count { color: #989898; font-weight: bold; display: block; padding: 10px 0; font-size: 18px; margin: 0 7px }
+#dashboard-widgets .table-cols th.day { color: #fff; font-weight: bold; text-align: center; width: 14% }
+#dashboard-widgets .table-cols th.day span { display: block; margin: 0 7px; padding: 3px 0; background: #A3A3A3 }
+#dashboard-widgets .table-cols td.max div.pourcent { background: #9ACD34 }
+#dashboard-widgets .table-cols td.max span.count { color: #6A9929 }
+#dashboard-widgets .table-cols th.max span { background: #7BA329 }

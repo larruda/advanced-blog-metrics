@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.2
+Version: 1.3
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -13,7 +13,7 @@ License: GPL2
 global $wpdb;
 
 // Weekdays
-$days = array( 'Monday', 'Thuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' );
+$days = array( 'Sunday', 'Monday', 'Thuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
 
 // Queries SQL
 $queries = array(
@@ -32,11 +32,14 @@ $queries = array(
     // Total words per posts approved
     'posts_word'             => "SELECT SUM(LENGTH(post_content) - LENGTH(REPLACE(post_content, ' ', ''))+1) AS count FROM `" . $wpdb->posts . "` WHERE post_status = 'publish'",        
     // Date of first post
-    'first_post'             => "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1"
+    'first_post'             => "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1",
+    // When do you post ?
+    'posts_per_day'          => "SELECT COUNT(ID) AS count, DATE_FORMAT(post_date, '%w') AS day FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' GROUP BY DATE_FORMAT(post_date, '%w') ORDER BY day ASC"
 );
 
 // Comment Registration required
 $commentregistration = (bool)get_option('comment_registration');
+$startofweek = get_option(('start_of_week'));
 
 // Options 
 $options = (array)get_option('abm_options');
@@ -76,6 +79,7 @@ function abm_dashboard_init() {
     wp_add_dashboard_widget( 'dashboard_comments', 'Comments', 'dashboard_comments' );
     wp_add_dashboard_widget( 'dashboard_comments_per_author', '5 authors who comment the most', 'dashboard_comments_per_author' );
     wp_add_dashboard_widget( 'dashboard_posts', 'Posts', 'dashboard_posts' );
+    wp_add_dashboard_widget( 'dashboard_posts_per_day', 'When do you post the most?', 'dashboard_posts_per_day' );
 }
 
 function abm_plugin_action_links( $links, $file ) {
@@ -147,19 +151,34 @@ function dashboard_comments_per_post() {
 
 // When do your posts generate the most comments?
 function dashboard_comments_per_day() {
-    global $queries, $wpdb, $days;
-    $posts = $wpdb->get_col( $queries['comments_per_day'], 0 );
+    global $queries, $wpdb, $days, $startofweek;
+    $posts = array();
+    
+    $results = $wpdb->get_results( $queries['comments_per_day'] );
+    foreach($results as $result) {
+        $posts[$result->day] = $result->count;       
+    }
+    
     $max = max($posts);
-    $html.= '<table cellpadding="0" cellspacing="0">';
+    $html.= '<table cellpadding="0" cellspacing="0" class="table-cols">';
     $html.= '<tr>';
-    for ($num_day = 0; $num_day <= 6; $num_day++) {
+    for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
         $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
         $html.= '<span class="count">' . $posts[$num_day] . '</span>';
         $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
         $html.= '</td>';
     }
+    for ($num_day = 0; $num_day < $startofweek; $num_day++) {
+        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html.= '</td>';
+   }
     $html.= '</tr><tr>';
-    for ($num_day = 0; $num_day <= 6; $num_day++) {
+    for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
+        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+    }
+     for ($num_day = 0; $num_day < $startofweek; $num_day++) {
         $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
     }
     $html.= '</tr>';
@@ -236,6 +255,44 @@ function dashboard_posts() {
     $html.= '</tr></tbody>';
     $html.= '</table>';
     echo $html;        
+}
+
+// When do you post the most ?
+function dashboard_posts_per_day() {
+    global $queries, $wpdb, $days, $startofweek;
+    $posts = array();
+    
+    $results = $wpdb->get_results( $queries['posts_per_day'] );
+    
+    foreach($results as $result) {
+        $posts[$result->day] = $result->count;       
+    }
+    
+    $max = max($posts);
+    $html.= '<table cellpadding="0" cellspacing="0" class="table-cols">';
+    $html.= '<tr>';
+    for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
+        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html.= '</td>';
+    }
+     for ($num_day = 0; $num_day < $startofweek; $num_day++) {
+        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html.= '</td>';
+    }
+    $html.= '</tr><tr>';
+    for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
+        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+    }
+     for ($num_day = 0; $num_day < $startofweek; $num_day++) {
+        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+    }
+    $html.= '</tr>';
+    $html.= '</table>';
+    echo $html;
 }
 
 function date_diff_days($date1, $date2) {    

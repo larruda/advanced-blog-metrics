@@ -13,7 +13,7 @@ License: GPL2
 global $wpdb;
 
 // Weekdays
-$days = array( 'Sunday', 'Monday', 'Thuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+$days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
 
 // Queries SQL
 $queries = array(

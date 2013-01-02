@@ -15,13 +15,9 @@ Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin al
 
 = Recent Releases =
 
+*   Version 1.3 adds the "when do you post the most?" widget, uses the wordpress option start_of_week for the "When du your posts generate the most comments?" and "When do you post the most?" widgets
+
 *   Version 1.2 adds the Starting Date option
-
-*   Version 1.3 adds the "when do you post the most?" widget
-*   Version 1.3 fixes the bug of display in the "When du your posts generate the most comments?" widget in case of there are days with no publication.
-*   Version 1.3 uses the wordpress option start_of_week for the "When du your posts generate the most comments?" and "When do you post the most?" widgets
-*   Version 1.3 adds a class in advanced-blog-metrics.php and modify style.css in order to apply same styles for both "When du your posts generate the most comments?" and "When do you post the most?" widgets
-
 
 = Features =
 

@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.0
+Version: 1.2
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -35,19 +35,39 @@ $queries = array(
     'first_post'             => "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1"
 );
 
-// First post
-$firstpost = $wpdb->get_row( $queries['first_post'] );
-$dayselapsed = date_diff_days($firstpost->post_date, date('Y-m-d H:i:s'));
-
 // Comment Registration required
 $commentregistration = (bool)get_option('comment_registration');
 
-add_action('admin_init', 'abm_admin_init');
-add_action('wp_dashboard_setup', 'abm_dashboard_init');
+// Options 
+$options = (array)get_option('abm_options');
+
+// Starting date
+if (!empty($options['starting_date'])) {
+    $startingdate = $options['starting_date'] . ' 00:00:00';
+} else {
+    $startingdate = (string)current( $wpdb->get_col( $queries['first_post'], 0 ) );  
+}
+
+// Elapsed days
+$elapseddays = date_diff_days( $startingdate, date( 'Y-m-d H:i:s' ) );    
+
+add_action( 'admin_init', 'abm_admin_init' );
+add_action( 'admin_menu', 'abm_admin_menu' );
+add_action( 'wp_dashboard_setup', 'abm_dashboard_init' );
+
+add_filter( 'plugin_action_links_'.  plugin_basename( __FILE__ ), 'abm_plugin_action_links', 10, 2 );
 
 function abm_admin_init() {
     wp_register_style( 'advanced-blog-metrics', plugins_url( 'style.css', __FILE__ ) );
     wp_enqueue_style( 'advanced-blog-metrics' );
+    
+    register_setting( 'abm_options', 'abm_options', 'abm_options_validate' );
+    add_settings_section( 'abm_options_general', 'Settings', 'abm_options_general_text', 'abm_options' );
+    add_settings_field( 'abm_options_starting_date', '<label for="abm_options_starting_date">Starting date</label>', 'abm_options_starting_date_text', 'abm_options', 'abm_options_general' );
+}
+
+function abm_admin_menu() {
+    add_menu_page( 'Advanced Blog Metrics', 'Advanced<br />Blog Metrics', 'administrator', 'advanced-blog-metrics', 'abm_options_page' );
 }
 
 function abm_dashboard_init() {
@@ -56,6 +76,55 @@ function abm_dashboard_init() {
     wp_add_dashboard_widget( 'dashboard_comments', 'Comments', 'dashboard_comments' );
     wp_add_dashboard_widget( 'dashboard_comments_per_author', '5 authors who comment the most', 'dashboard_comments_per_author' );
     wp_add_dashboard_widget( 'dashboard_posts', 'Posts', 'dashboard_posts' );
+}
+
+function abm_plugin_action_links( $links, $file ) {
+    array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=advanced-blog-metrics' ) . '">' . __( 'Settings' ) . '</a>' );
+    return $links;
+}
+
+function abm_options_page() {
+    ob_start();
+    echo '<div class="wrap">';
+    echo '<h2>Advanced Blog Metrics</h2>';
+    echo '<form action="options.php" method="post">';
+    settings_errors();
+    settings_fields( 'abm_options' );
+    do_settings_sections( 'abm_options' );
+    submit_button();
+    echo '</form>';
+    echo '</div>';
+    ob_end_flush();
+}
+
+function abm_options_general_text() { }
+
+function abm_options_starting_date_text() {
+    $options = get_option( 'abm_options' );
+    echo '<input type="text" size="12" maxlength="10" id="abm_options_starting_date" name="abm_options[starting_date]" value="'.$options['starting_date'].'" /><span id="local-time">Date format: YYYY-MM-DD</span>';
+    echo '<p class="description">If you leave this field empty, Advanced Blog Metrics uses the date of your first post by default.</p>';
+}
+
+function abm_options_validate($posted) {
+    $options = get_option( 'abm_options' );
+    $cleaned = array();
+    
+    if ( !empty( $posted['starting_date'] ) && !preg_match( '`[0-9]{4}\-[0-9]{2}\-[0-9]{2}`', $posted['starting_date'] ) ) {
+        add_settings_error('abm_options_starting_date', 'abm_options_starting_date_bad_format', 'You did not use the expected date format. Please, fill in the starting date with the following format: YYYY-MM-DD');        
+    } elseif ( !empty( $posted['starting_date'] ) ) {
+        list( $year, $month, $day ) = explode( '-', $posted['starting_date'] );
+        if ( !checkdate( $month, $day, $year ) ) {
+            add_settings_error('abm_options_starting_date', 'abm_options_starting_date_not_valid', 'You have entered a date which does not exist. Please, fill in the starting date with a valid date.');
+        }                
+    }
+    
+    if ( count( get_settings_errors() ) > 0 && array_key_exists( 'starting_date', $options ) ) {
+        $cleaned['starting_date'] = $options['starting_date'];
+    } else {
+        $cleaned['starting_date'] = $posted['starting_date'];
+    }
+    
+    return $cleaned;
 }
 
 // Posts which generate the most comments
@@ -100,7 +169,7 @@ function dashboard_comments_per_day() {
     
 // Comments
 function dashboard_comments() {   
-    global $queries, $wpdb, $dayselapsed;
+    global $queries, $wpdb, $elapseddays;
     $total = current( $wpdb->get_col( $queries['comments_total'], 0 ) );
     $posts = current( $wpdb->get_col( $queries['posts_total'], 0 ) );
     $words = current( $wpdb->get_col( $queries['comments_word'], 0 ) );
@@ -116,7 +185,7 @@ function dashboard_comments() {
         $html.= '<tbody>';
             $html.= '<tr>';
                 $html.= '<td class="number"><span>' . $total . '</span></td>';
-                $html.= '<td class="number"><span>' . round( $total / $dayselapsed, 2 ) . '</span></td>';
+                $html.= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
                 $html.= '<td class="number"><span>' . round( $total / $posts, 1 ) . '</span></td>';
                 $html.= '<td class="number"><span>' . round( $words / $total ) . '</span></td>';
             $html.= '</tr>';
@@ -149,7 +218,7 @@ function dashboard_comments_per_author() {
 
 // Posts
 function dashboard_posts() {
-    global $queries, $wpdb, $dayselapsed;
+    global $queries, $wpdb, $elapseddays;
     $total = current( $wpdb->get_col( $queries['posts_total'], 0 ) );
     $comments = current( $wpdb->get_col( $queries['comments_total'], 0 ) );
     $words = current( $wpdb->get_col( $queries['posts_word'], 0 ) );
@@ -161,7 +230,7 @@ function dashboard_posts() {
     $html .= '<th width="25%">Words per Post</th>';
     $html.= '</tr></thead><tbody><tr>';
     $html.= '<td class="number"><span>' . $total . '</span></td>';
-    $html.= '<td class="number"><span>' . round( $total / $dayselapsed, 2 ) . '</span></td>';
+    $html.= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
     $html.= '<td class="number"><span>' . round( $comments / $total, 1 ) . '</span></td>';
     $html.= '<td class="number"><span>' . round( $words / $total ) . '</span></td>';
     $html.= '</tr></tbody>';
@@ -169,8 +238,8 @@ function dashboard_posts() {
     echo $html;        
 }
 
-function date_diff_days($date1, $date2) {
+function date_diff_days($date1, $date2) {    
     $s = strtotime( $date2 ) - strtotime( $date1 );
     $d = intval( $s / 86400 ) + 1;  
-    return "$d";
+    return $d;
 } 

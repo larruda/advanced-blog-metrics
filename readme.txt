@@ -3,7 +3,7 @@ Contributors: atalanta-agency
 Tags: blog metrics, blog analytics
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,6 +12,12 @@ Learn more about your readers and how they react to your posts. That way you cou
 == Description ==
 
 Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance by tracking the following features:
+
+= Recent Releases =
+
+*   Version 1.2 adds the Starting Date option
+
+= Features =
 
 Posts:
 

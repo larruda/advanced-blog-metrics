@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.3
+Version: 1.4
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -11,6 +11,15 @@ License: GPL2
 
 /* @var $wpdb wpdb */
 global $wpdb;
+
+/********** OPTIONS **********/
+// general options of the plugin
+$options = (array)get_option('abm_options');
+// Comment Registration required
+$commentregistration = (bool)get_option('comment_registration');
+// start of week
+$startofweek = get_option(('start_of_week'));
+
 
 // Weekdays
 $days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
@@ -34,15 +43,11 @@ $queries = array(
     // Date of first post
     'first_post'             => "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1",
     // When do you post ?
-    'posts_per_day'          => "SELECT COUNT(ID) AS count, DATE_FORMAT(post_date, '%w') AS day FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' GROUP BY DATE_FORMAT(post_date, '%w') ORDER BY day ASC"
+    'posts_per_day'          => "SELECT COUNT(ID) AS count, DATE_FORMAT(post_date, '%w') AS day FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' GROUP BY DATE_FORMAT(post_date, '%w') ORDER BY day ASC",
+    // 5 posts which generate the most Facebook shares and likes
+    'posts'                  => "SELECT ID, post_title FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post'"
+    
 );
-
-// Comment Registration required
-$commentregistration = (bool)get_option('comment_registration');
-$startofweek = get_option(('start_of_week'));
-
-// Options 
-$options = (array)get_option('abm_options');
 
 // Starting date
 if (!empty($options['starting_date'])) {
@@ -52,13 +57,20 @@ if (!empty($options['starting_date'])) {
 }
 
 // Elapsed days
-$elapseddays = date_diff_days( $startingdate, date( 'Y-m-d H:i:s' ) );    
+function date_diff_days($date1, $date2) {    
+    $s = strtotime( $date2 ) - strtotime( $date1 );
+    $d = intval( $s / 86400 ) + 1;  
+    return $d;
+}
+$elapseddays = date_diff_days( $startingdate, date( 'Y-m-d H:i:s' ) );
 
+
+
+/********** ACTIONS **********/
 add_action( 'admin_init', 'abm_admin_init' );
 add_action( 'admin_menu', 'abm_admin_menu' );
-add_action( 'wp_dashboard_setup', 'abm_dashboard_init' );
-
 add_filter( 'plugin_action_links_'.  plugin_basename( __FILE__ ), 'abm_plugin_action_links', 10, 2 );
+
 
 function abm_admin_init() {
     wp_register_style( 'advanced-blog-metrics', plugins_url( 'style.css', __FILE__ ) );
@@ -67,26 +79,18 @@ function abm_admin_init() {
     register_setting( 'abm_options', 'abm_options', 'abm_options_validate' );
     add_settings_section( 'abm_options_general', 'Settings', 'abm_options_general_text', 'abm_options' );
     add_settings_field( 'abm_options_starting_date', '<label for="abm_options_starting_date">Starting date</label>', 'abm_options_starting_date_text', 'abm_options', 'abm_options_general' );
+    
+    // access only for administrator
+    if (current_user_can('administrator') ) {        
+        add_action( 'wp_dashboard_setup', 'abm_dashboard_init' );    
+    }
 }
 
 function abm_admin_menu() {
     add_menu_page( 'Advanced Blog Metrics', 'Advanced<br />Blog Metrics', 'administrator', 'advanced-blog-metrics', 'abm_options_page' );
 }
 
-function abm_dashboard_init() {
-    wp_add_dashboard_widget( 'dashboard_comments_per_post', '5 posts which generate the most comments', 'dashboard_comments_per_post' );
-    wp_add_dashboard_widget( 'dashboard_comments_per_day', 'When do your posts generate the most comments?', 'dashboard_comments_per_day' );
-    wp_add_dashboard_widget( 'dashboard_comments', 'Comments', 'dashboard_comments' );
-    wp_add_dashboard_widget( 'dashboard_comments_per_author', '5 authors who comment the most', 'dashboard_comments_per_author' );
-    wp_add_dashboard_widget( 'dashboard_posts', 'Posts', 'dashboard_posts' );
-    wp_add_dashboard_widget( 'dashboard_posts_per_day', 'When do you post the most?', 'dashboard_posts_per_day' );
-}
-
-function abm_plugin_action_links( $links, $file ) {
-    array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=advanced-blog-metrics' ) . '">' . __( 'Settings' ) . '</a>' );
-    return $links;
-}
-
+/********** SETTINGS **********/
 function abm_options_page() {
     ob_start();
     echo '<div class="wrap">';
@@ -131,12 +135,40 @@ function abm_options_validate($posted) {
     return $cleaned;
 }
 
-// Posts which generate the most comments
+
+
+/********** INIT **********/
+function abm_dashboard_init() {
+    // Widget #1
+    wp_add_dashboard_widget( 'dashboard_comments_per_post', '5 posts which generate the most comments', 'dashboard_comments_per_post' );    
+    // Widget #2
+    wp_add_dashboard_widget( 'dashboard_comments_per_day', 'When do your posts generate the most comments?', 'dashboard_comments_per_day' );   
+    // Widget #3
+    wp_add_dashboard_widget( 'dashboard_comments', 'Comments', 'dashboard_comments' );   
+    // Widget #4
+    wp_add_dashboard_widget( 'dashboard_comments_per_author', '5 authors who comment the most', 'dashboard_comments_per_author' );   
+    // Widget #5
+    wp_add_dashboard_widget( 'dashboard_posts', 'Posts', 'dashboard_posts' );    
+    // Widget #6
+    wp_add_dashboard_widget( 'dashboard_posts_per_day', 'When do you post the most?', 'dashboard_posts_per_day' );    
+    // Widget #7
+    wp_add_dashboard_widget( 'dashboard_posts_facebook', '5 posts which generate the most Facebook shares and likes', 'dashboard_posts_facebook' );
+}
+
+function abm_plugin_action_links( $links, $file ) {
+    array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=advanced-blog-metrics' ) . '">' . __( 'Settings' ) . '</a>' );
+    return $links;
+}
+
+
+
+/***** WIDGETS ON DASHBOARD *****/
+// widget #1 : Posts which generate the most comments
 function dashboard_comments_per_post() {
     global $queries, $wpdb;
     $posts = $wpdb->get_results( $queries['comments_per_post'] );
     $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html.= '<thead><tr><th width="85%">Post</th><th>Comments</th></tr></thead>';
+    $html.= '<thead><tr><th width="85%">Post</th><th class="comment_count">Comments</th></tr></thead>';
     $html.= '<tbody>';
     foreach ( $posts as $post ) {
         $html.= '<tr>';
@@ -149,7 +181,7 @@ function dashboard_comments_per_post() {
     echo $html;
 }
 
-// When do your posts generate the most comments?
+// Widget #2 : When do your posts generate the most comments?
 function dashboard_comments_per_day() {
     global $queries, $wpdb, $days, $startofweek;
     $posts = array();
@@ -186,7 +218,7 @@ function dashboard_comments_per_day() {
     echo $html;
 }
     
-// Comments
+// Widget #3 : Comments
 function dashboard_comments() {   
     global $queries, $wpdb, $elapseddays;
     $total = current( $wpdb->get_col( $queries['comments_total'], 0 ) );
@@ -213,14 +245,14 @@ function dashboard_comments() {
     echo $html;        
 }
     
-// Authors who comment the most
+// Widget #4 : Authors who comment the most
 function dashboard_comments_per_author() {
     global $queries, $wpdb, $commentregistration;
     if ($commentregistration) {
         $authors = $wpdb->get_results($queries['comments_per_author']);
     }
     $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html.= '<thead><tr><th width="85%">Author</th><th>Comments</th></tr></thead><tbody>';
+    $html.= '<thead><tr><th width="85%">Author</th><th class="comment_count">Comments</th></tr></thead><tbody>';
     if ($commentregistration) {
         foreach ($authors as $author) {
             $html.= '<tr>';
@@ -235,7 +267,7 @@ function dashboard_comments_per_author() {
     echo $html;
 }    
 
-// Posts
+// Widget #5 : Posts
 function dashboard_posts() {
     global $queries, $wpdb, $elapseddays;
     $total = current( $wpdb->get_col( $queries['posts_total'], 0 ) );
@@ -257,7 +289,7 @@ function dashboard_posts() {
     echo $html;        
 }
 
-// When do you post the most ?
+// Widget #6 : When do you post the most?
 function dashboard_posts_per_day() {
     global $queries, $wpdb, $days, $startofweek;
     $posts = array();
@@ -295,8 +327,75 @@ function dashboard_posts_per_day() {
     echo $html;
 }
 
-function date_diff_days($date1, $date2) {    
-    $s = strtotime( $date2 ) - strtotime( $date1 );
-    $d = intval( $s / 86400 ) + 1;  
-    return $d;
-} 
+// Widget #7 : 5 posts which generate the most Facebook shares and likes
+function dashboard_posts_facebook() {
+    global $queries, $wpdb;
+    
+    $results = $wpdb->get_results( $queries['posts'] );
+
+    $posts_like = array();
+    $posts_share = array();
+    
+    foreach ($results as $result) {
+        $fql_query_url = 'https://graph.facebook.com/' . '/fql?q=SELECT+url,share_count,like_count+FROM+link_stat+WHERE+url=\'' . get_permalink( $result->ID ) . '\'';
+        $fql_query_result = file_get_contents($fql_query_url);
+        $fql_query_obj = json_decode($fql_query_result, true);
+        
+        $posts_like[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'like_count' => $fql_query_obj[data][0]['like_count']);
+        $posts_share[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'share_count' => $fql_query_obj[data][0]['share_count']);   
+    }
+    
+    foreach($posts_like as $k => $v) {
+        $like[$k] = $v['like_count'];
+    }
+    array_multisort($like, SORT_DESC, $posts_like);
+    
+    
+    foreach($posts_share as $k => $v) {
+        $share[$k] = $v['share_count'];
+    }
+    array_multisort($share, SORT_DESC, $posts_share);
+    
+    // About LIKES
+    $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
+    $html.= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="like" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-like.png" /></th></tr></thead><tbody>';
+    
+    $i=0;
+    foreach ($posts_like as $post) {
+        $i++;
+        if( $i<=5 ) {
+            $html.= '<tr>';
+            $html.= '<th><a href="' . $post['permalink'] . '">' . $post['title'] . '</a></th>';
+            $html.= '<td class="facebook_count">' . $post['like_count'] . '</td>';
+            $html.= '</tr>';
+        }
+        else {
+            break;
+        }
+        
+    }
+    
+    $html.= '</tbody></table>';
+    echo $html, "<br />";
+    
+    
+    // About SHARES
+    $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
+    $html.= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="share" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-share.png" /></th></tr></thead><tbody>';
+    $i=0;
+    foreach ($posts_share as $post) {
+        $i++;
+        if( $i<=5 ) {
+            $html.= '<tr>';
+            $html.= '<th><a href="' . $post['permalink'] . '">' . $post['title'] . '</a></th>';
+            $html.= '<td class="facebook_count">' . $post['share_count'] . '</td>';
+            $html.= '</tr>';
+        }
+        else
+            break;
+    }
+    
+    $html.= '</tbody></table>';
+    echo $html;
+     
+}

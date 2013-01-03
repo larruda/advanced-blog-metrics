@@ -1,10 +1,10 @@
 #dashboard-widgets .table-list { width: 100% }
 #dashboard-widgets .table-list th { text-align: left }
+#dashboard-widgets .table-list thead th.comment_count, #dashboard-widgets .table-list thead th.facebook_count { text-align: right !important}
 #dashboard-widgets .table-list thead th { border-bottom: 1px solid #ECECEC; color: #8F8F8F; font-size: 14px; font-weight: normal }
 #dashboard-widgets .table-list tbody th, #dashboard-widgets .table-list tbody td { font-weight: normal; padding : 4px }
-#dashboard-widgets .table-list tbody td.comment_count { text-align: right }
+#dashboard-widgets .table-list tbody td.comment_count, #dashboard-widgets .table-list tbody td.facebook_count { text-align: right }
 #dashboard-widgets .table-list tbody tr:nth-child(odd) { background: #fff }
-#dashboard-widgets .table-list tbody td.comment_count { text-align: right }
 #dashboard-widgets .table-list tbody td.number { font-size: 400%; line-height: 2em; text-align: center }
 #dashboard-widgets .table-list tbody td.number span { border-right: 1px solid #ccc; display: inline-block; width: 100%; margin: 20px 0 }
 #dashboard-widgets .table-list tbody td.number:last-child span { border-right: none }

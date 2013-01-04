@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.4
+Version: 1.4.1
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -15,45 +15,22 @@ global $wpdb;
 /********** OPTIONS **********/
 // general options of the plugin
 $options = (array)get_option('abm_options');
+
 // Comment Registration required
 $commentregistration = (bool)get_option('comment_registration');
 // start of week
-$startofweek = get_option(('start_of_week'));
+$startofweek = get_option('start_of_week');
 
 
 // Weekdays
 $days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
 
-// Queries SQL
-$queries = array(
-    // 5 posts which generate the most comments
-    'comments_per_post'      => "SELECT ID AS id, post_title, comment_count FROM `" . $wpdb->posts . "` WHERE post_type = 'post' AND post_status = 'publish' AND comment_count > 0 ORDER BY comment_count DESC LIMIT 5",
-    // When do your posts generate the most comments?
-    'comments_per_day'       => "SELECT COUNT(comment_ID) AS count, DATE_FORMAT(comment_date, '%w') AS day FROM `" . $wpdb->comments . "` WHERE comment_approved = 1 AND DATE_FORMAT(comment_date, '%w') IS NOT NULL GROUP BY DATE_FORMAT(comment_date, '%w') ORDER BY day ASC",
-    // Total comments approved
-    'comments_total'         => "SELECT COUNT(comment_ID) AS count FROM `" . $wpdb->comments . "` WHERE comment_approved = '1'",
-    // Total words per comments approved
-    'comments_word'          => "SELECT SUM(LENGTH(comment_content) - LENGTH(REPLACE(comment_content, ' ', ''))+1) AS count FROM `" . $wpdb->comments . "` WHERE comment_approved = '1'",
-    // 5 authors who comment the most
-    'comments_per_author'    => "SELECT u.ID, u.user_login, u.display_name, COUNT(c.comment_ID) AS comment_count FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->users . "` u ON c.user_id = u.ID WHERE c.user_id != 0 GROUP BY c.user_id ORDER BY comment_count DESC LIMIT 5",
-    // Total posts published
-    'posts_total'            => "SELECT COUNT(ID) FROM `" . $wpdb->posts . "` WHERE post_type = 'post' AND post_status = 'publish'",    
-    // Total words per posts approved
-    'posts_word'             => "SELECT SUM(LENGTH(post_content) - LENGTH(REPLACE(post_content, ' ', ''))+1) AS count FROM `" . $wpdb->posts . "` WHERE post_status = 'publish'",        
-    // Date of first post
-    'first_post'             => "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1",
-    // When do you post ?
-    'posts_per_day'          => "SELECT COUNT(ID) AS count, DATE_FORMAT(post_date, '%w') AS day FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' GROUP BY DATE_FORMAT(post_date, '%w') ORDER BY day ASC",
-    // 5 posts which generate the most Facebook shares and likes
-    'posts'                  => "SELECT ID, post_title FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post'"
-    
-);
-
 // Starting date
 if (!empty($options['starting_date'])) {
     $startingdate = $options['starting_date'] . ' 00:00:00';
 } else {
-    $startingdate = (string)current( $wpdb->get_col( $queries['first_post'], 0 ) );  
+    $query_first_post = "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1";
+    $startingdate = (string)current( $wpdb->get_col( $query_first_post, 0 ) );  
 }
 
 // Elapsed days
@@ -64,7 +41,29 @@ function date_diff_days($date1, $date2) {
 }
 $elapseddays = date_diff_days( $startingdate, date( 'Y-m-d H:i:s' ) );
 
-
+// Queries SQL
+$queries = array(
+    // Date of first post
+    //'first_post'             => "SELECT post_date FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' ORDER BY post_date ASC LIMIT 1",
+    // 5 posts which generate the most comments
+    'comments_per_post'      => "SELECT ID AS id, post_title, post_date, comment_count FROM `" . $wpdb->posts . "` WHERE post_type = 'post' AND post_status = 'publish' AND comment_count > 0 AND post_date >= '" . $startingdate . "' ORDER BY comment_count DESC LIMIT 5",
+    // When do your posts generate the most comments?
+    'comments_per_day'       => "SELECT COUNT(c.comment_ID) AS count, DATE_FORMAT(c.comment_date, '%w') AS day, p.post_date FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE comment_approved = 1 AND DATE_FORMAT(c.comment_date, '%w') IS NOT NULL AND p.post_date >= '" . $startingdate . "' GROUP BY DATE_FORMAT(comment_date, '%w') ORDER BY day ASC",
+    // Total comments approved
+    'comments_total'         => "SELECT COUNT(c.comment_ID) AS count FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE comment_approved = '1' AND p.post_date >= '" . $startingdate . "'",
+     // Total posts published
+    'posts_total'            => "SELECT COUNT(ID), post_date FROM `" . $wpdb->posts . "` WHERE post_type = 'post' AND post_status = 'publish' AND post_date >= '" . $startingdate . "'",    
+    // Total words per comments approved
+    'comments_word'          => "SELECT SUM(LENGTH(c.comment_content) - LENGTH(REPLACE(c.comment_content, ' ', '')) +1) AS count, p.post_date FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE c.comment_approved = '1' AND p.post_date >= '" . $startingdate . "'",
+    // 5 authors who comment the most
+    'comments_per_author'    => "SELECT u.ID, u.user_login, u.display_name, COUNT(c.comment_ID) AS comment_count FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->users . "` u ON c.user_id = u.ID LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE c.user_id != 0 AND p.post_date >= '" . $startingdate . "' GROUP BY c.user_id ORDER BY comment_count DESC LIMIT 5",
+    // Total words per posts approved
+    'posts_word'             => "SELECT SUM(LENGTH(post_content) - LENGTH(REPLACE(post_content, ' ', '')) +1) AS count FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND  post_type = 'post' AND post_date >= '" . $startingdate . "'", 
+    // When do you post ?
+    'posts_per_day'          => "SELECT COUNT(ID) AS count, DATE_FORMAT(post_date, '%w') AS day FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' AND post_date >= '" . $startingdate . "' GROUP BY DATE_FORMAT(post_date, '%w') ORDER BY day ASC",
+    // 5 posts which generate the most Facebook shares and likes
+    'posts'                  => "SELECT ID, post_title FROM `" . $wpdb->posts . "` WHERE post_status = 'publish' AND post_type = 'post' AND post_date >= '" . $startingdate . "'"
+);
 
 /********** ACTIONS **********/
 add_action( 'admin_init', 'abm_admin_init' );
@@ -109,7 +108,7 @@ function abm_options_general_text() { }
 
 function abm_options_starting_date_text() {
     $options = get_option( 'abm_options' );
-    echo '<input type="text" size="12" maxlength="10" id="abm_options_starting_date" name="abm_options[starting_date]" value="'.$options['starting_date'].'" /><span id="local-time">Date format: YYYY-MM-DD</span>';
+    echo '<input type="text" size="12" maxlength="10" id="abm_options_starting_date" name="abm_options[starting_date]" value="' . $options['starting_date'] . '" title="Date format: YYYY-MM-DD" /><span id="local-time">Date format: YYYY-MM-DD</span>';
     echo '<p class="description">If you leave this field empty, Advanced Blog Metrics uses the date of your first post by default.</p>';
 }
 
@@ -161,23 +160,22 @@ function abm_plugin_action_links( $links, $file ) {
 }
 
 
-
 /***** WIDGETS ON DASHBOARD *****/
 // widget #1 : Posts which generate the most comments
 function dashboard_comments_per_post() {
     global $queries, $wpdb;
     $posts = $wpdb->get_results( $queries['comments_per_post'] );
-    $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html.= '<thead><tr><th width="85%">Post</th><th class="comment_count">Comments</th></tr></thead>';
-    $html.= '<tbody>';
+    $html  = '<table cellpadding="0" cellspacing="0" class="table-list">';
+    $html .= '<thead><tr><th width="85%">Post</th><th class="comment_count">Comments</th></tr></thead>';
+    $html .= '<tbody>';
     foreach ( $posts as $post ) {
-        $html.= '<tr>';
-        $html.= '<th><a href="' . get_permalink( $post->ID ) . '">' . $post->post_title . '</a></th>';
-        $html.= '<td class="comment_count">' . $post->comment_count . '</td>';
-        $html.= '</tr>';
+        $html .= '<tr>';
+        $html .= '<th><a href="' . get_permalink( $post->ID ) . '">' . $post->post_title . '</a></th>';
+        $html .= '<td class="comment_count">' . $post->comment_count . '</td>';
+        $html .= '</tr>';
     }
-    $html.= '</tbody>';
-    $html.= '</table>';
+    $html .= '</tbody>';
+    $html .= '</table>';
     echo $html;
 }
 
@@ -187,34 +185,36 @@ function dashboard_comments_per_day() {
     $posts = array();
     
     $results = $wpdb->get_results( $queries['comments_per_day'] );
+    
     foreach($results as $result) {
         $posts[$result->day] = $result->count;       
     }
     
     $max = max($posts);
-    $html.= '<table cellpadding="0" cellspacing="0" class="table-cols">';
-    $html.= '<tr>';
+    
+    $html = '<table cellpadding="0" cellspacing="0" class="table-cols">';
+    $html .= '<tr>';
     for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
-        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
-        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
-        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
-        $html.= '</td>';
+        $html .= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html .= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html .= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html .= '</td>';
     }
     for ($num_day = 0; $num_day < $startofweek; $num_day++) {
-        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
-        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
-        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
-        $html.= '</td>';
+        $html .= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html .= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html .= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html .= '</td>';
    }
-    $html.= '</tr><tr>';
+    $html .= '</tr><tr>';
     for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
-        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+        $html .= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
     }
      for ($num_day = 0; $num_day < $startofweek; $num_day++) {
-        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+        $html .= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
     }
-    $html.= '</tr>';
-    $html.= '</table>';
+    $html .= '</tr>';
+    $html .= '</table>';
     echo $html;
 }
     
@@ -224,24 +224,24 @@ function dashboard_comments() {
     $total = current( $wpdb->get_col( $queries['comments_total'], 0 ) );
     $posts = current( $wpdb->get_col( $queries['posts_total'], 0 ) );
     $words = current( $wpdb->get_col( $queries['comments_word'], 0 ) );
-    $html.= '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
-        $html.= '<thead>';
-            $html.= '<tr>';
+    $html = '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
+        $html .= '<thead>';
+            $html .= '<tr>';
                 $html .= '<th width="25%">Approved comments</th>';
                 $html .= '<th width="25%">Comments per Day</th>';
                 $html .= '<th width="25%">Comments per Post</th>';
                 $html .= '<th width="25%">Words per Comment</th>';
-            $html.= '</tr>';
-        $html.= '</thead>';
-        $html.= '<tbody>';
-            $html.= '<tr>';
-                $html.= '<td class="number"><span>' . $total . '</span></td>';
-                $html.= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
-                $html.= '<td class="number"><span>' . round( $total / $posts, 1 ) . '</span></td>';
-                $html.= '<td class="number"><span>' . round( $words / $total ) . '</span></td>';
-            $html.= '</tr>';
-        $html.= '</tbody>';
-    $html.= '</table>';
+            $html .= '</tr>';
+        $html .= '</thead>';
+        $html .= '<tbody>';
+            $html .= '<tr>';
+                $html .= '<td class="number"><span>' . $total . '</span></td>';
+                $html .= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
+                $html .= '<td class="number"><span>' . round( $total / $posts, 1 ) . '</span></td>';
+                $html .= '<td class="number"><span>' . round( $words / $total ) . '</span></td>';
+            $html .= '</tr>';
+        $html .= '</tbody>';
+    $html .= '</table>';
     echo $html;        
 }
     
@@ -251,19 +251,19 @@ function dashboard_comments_per_author() {
     if ($commentregistration) {
         $authors = $wpdb->get_results($queries['comments_per_author']);
     }
-    $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html.= '<thead><tr><th width="85%">Author</th><th class="comment_count">Comments</th></tr></thead><tbody>';
+    $html  = '<table cellpadding="0" cellspacing="0" class="table-list">';
+    $html .= '<thead><tr><th width="85%">Author</th><th class="comment_count">Comments</th></tr></thead><tbody>';
     if ($commentregistration) {
         foreach ($authors as $author) {
-            $html.= '<tr>';
-            $html.= '<th><a href="' . get_admin_url() . 'user-edit.php?user_id='.$author->ID . '" title="Modifier">' . $author->display_name . '</a></th>';
-            $html.= '<td class="comment_count">' . $author->comment_count . '</td>';
-            $html.= '</tr>';
+            $html .= '<tr>';
+            $html .= '<th><a href="' . get_admin_url() . 'user-edit.php?user_id='.$author->ID . '" title="Modifier">' . $author->display_name . '</a></th>';
+            $html .= '<td class="comment_count">' . $author->comment_count . '</td>';
+            $html .= '</tr>';
         }
     } else {
-        $html.= '<tr><td colspan="2"><p>Note that you need to check "Users must be registered and logged in to comment" in the Wordpress Settings->Discussion to see data in the "5 authors who comments the most" widget.</p><p><a class="button" href="' . get_admin_url() . 'options-discussion.php">View discussion options</p></td></tr>';
+        $html .= '<tr><td colspan="2"><p>Note that you need to check "Users must be registered and logged in to comment" in the Wordpress Settings->Discussion to see data in the "5 authors who comments the most" widget.</p><p><a class="button" href="' . get_admin_url() . 'options-discussion.php">View discussion options</p></td></tr>';
     }
-    $html.= '</tbody></table>';
+    $html .= '</tbody></table>';
     echo $html;
 }    
 
@@ -273,129 +273,147 @@ function dashboard_posts() {
     $total = current( $wpdb->get_col( $queries['posts_total'], 0 ) );
     $comments = current( $wpdb->get_col( $queries['comments_total'], 0 ) );
     $words = current( $wpdb->get_col( $queries['posts_word'], 0 ) );
-    $html.= '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
-    $html.= '<thead><tr>';
+    $html  = '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
+    $html .= '<thead><tr>';
     $html .= '<th width="25%">Posts</th>';
     $html .= '<th width="25%">Posts per Day</th>';
     $html .= '<th width="25%">Comments per Post</th>';
     $html .= '<th width="25%">Words per Post</th>';
-    $html.= '</tr></thead><tbody><tr>';
-    $html.= '<td class="number"><span>' . $total . '</span></td>';
-    $html.= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
-    $html.= '<td class="number"><span>' . round( $comments / $total, 1 ) . '</span></td>';
-    $html.= '<td class="number"><span>' . round( $words / $total ) . '</span></td>';
-    $html.= '</tr></tbody>';
-    $html.= '</table>';
+    $html .= '</tr></thead><tbody><tr>';
+    $html .= '<td class="number"><span>' . $total . '</span></td>';
+    $html .= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
+    $html .= '<td class="number"><span>' . round( $comments / $total, 1 ) . '</span></td>';
+    $html .= '<td class="number"><span>' . round( $words / $total ) . '</span></td>';
+    $html .= '</tr></tbody>';
+    $html .= '</table>';
     echo $html;        
 }
 
 // Widget #6 : When do you post the most?
 function dashboard_posts_per_day() {
     global $queries, $wpdb, $days, $startofweek;
-    $posts = array();
-    
-    $results = $wpdb->get_results( $queries['posts_per_day'] );
-    
+    $posts = array();    
+    $results = $wpdb->get_results( $queries['posts_per_day'] );    
     foreach($results as $result) {
         $posts[$result->day] = $result->count;       
     }
     
     $max = max($posts);
-    $html.= '<table cellpadding="0" cellspacing="0" class="table-cols">';
-    $html.= '<tr>';
+    $html  = '<table cellpadding="0" cellspacing="0" class="table-cols">';
+    $html .= '<tr>';
     for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
-        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
-        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
-        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
-        $html.= '</td>';
+        $html .= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html .= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html .= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html .= '</td>';
     }
      for ($num_day = 0; $num_day < $startofweek; $num_day++) {
-        $html.= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
-        $html.= '<span class="count">' . $posts[$num_day] . '</span>';
-        $html.= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
-        $html.= '</td>';
+        $html .= '<td class="value' . ($max == $posts[$num_day] ? ' max' : '') . '">';
+        $html .= '<span class="count">' . $posts[$num_day] . '</span>';
+        $html .= '<div class="pourcent" style="height: ' . round( ( $posts[$num_day] / $max ) * 150, 0 ) . 'px"></div>';
+        $html .= '</td>';
     }
-    $html.= '</tr><tr>';
+    $html .= '</tr><tr>';
     for ($num_day = $startofweek; $num_day <= 6; $num_day++) {
-        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+        $html .= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
     }
      for ($num_day = 0; $num_day < $startofweek; $num_day++) {
-        $html.= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
+        $html .= '<th class="day' . ( $max == $posts[$num_day] ? ' max' : '' ) . '"><span>' . strtoupper( substr( $days[$num_day], 0, 3 ) ) . '</span></th>';
     }
-    $html.= '</tr>';
-    $html.= '</table>';
+    $html .= '</tr>';
+    $html .= '</table>';
     echo $html;
 }
 
 // Widget #7 : 5 posts which generate the most Facebook shares and likes
 function dashboard_posts_facebook() {
+    
     global $queries, $wpdb;
     
-    $results = $wpdb->get_results( $queries['posts'] );
+    // Add the option if it does not exist yet
+    add_option('abm_data', '');
+    
+	// data of the plugin
+    $data = get_option('abm_data');
+    
+    // If the admin cliks on the button, the queries will occur and it could be long depending on the number of posts
+    if( isset($_POST['sub_posts_on_facebook']) && 'Get data' == $_POST['sub_posts_on_facebook'] ) {
+        
+        $posts_likes = array();
+        $posts_shares = array();
+        
+        $results = $wpdb->get_results( $queries['posts'] );
+        foreach ($results as $result) {
+            $fql_query_url = 'https://graph.facebook.com/' . '/fql?q=SELECT+url,share_count,like_count+FROM+link_stat+WHERE+url=\'' . get_permalink( $result->ID ) . '\'';
+            $fql_query_result = file_get_contents($fql_query_url);
+            $fql_query_obj = json_decode($fql_query_result, true);
 
-    $posts_like = array();
-    $posts_share = array();
-    
-    foreach ($results as $result) {
-        $fql_query_url = 'https://graph.facebook.com/' . '/fql?q=SELECT+url,share_count,like_count+FROM+link_stat+WHERE+url=\'' . get_permalink( $result->ID ) . '\'';
-        $fql_query_result = file_get_contents($fql_query_url);
-        $fql_query_obj = json_decode($fql_query_result, true);
+            $posts_likes[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'like_count' => $fql_query_obj[data][0]['like_count']);
+            $posts_shares[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'share_count' => $fql_query_obj[data][0]['share_count']);   
+        }
+
         
-        $posts_like[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'like_count' => $fql_query_obj[data][0]['like_count']);
-        $posts_share[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'share_count' => $fql_query_obj[data][0]['share_count']);   
-    }
-    
-    foreach($posts_like as $k => $v) {
-        $like[$k] = $v['like_count'];
-    }
-    array_multisort($like, SORT_DESC, $posts_like);
-    
-    
-    foreach($posts_share as $k => $v) {
-        $share[$k] = $v['share_count'];
-    }
-    array_multisort($share, SORT_DESC, $posts_share);
-    
-    // About LIKES
-    $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html.= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="like" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-like.png" /></th></tr></thead><tbody>';
-    
-    $i=0;
-    foreach ($posts_like as $post) {
-        $i++;
-        if( $i<=5 ) {
-            $html.= '<tr>';
-            $html.= '<th><a href="' . $post['permalink'] . '">' . $post['title'] . '</a></th>';
-            $html.= '<td class="facebook_count">' . $post['like_count'] . '</td>';
-            $html.= '</tr>';
+        foreach($posts_likes as $k => $v) {
+            $likes[$k] = $v['like_count'];
         }
-        else {
-            break;
+        array_multisort($likes, SORT_DESC, $posts_likes);        
+        $posts_likes_output = array_slice($posts_likes, 0, 5);
+
+        foreach($posts_shares as $k => $v) {
+            $shares[$k] = $v['share_count'];
         }
+        array_multisort($shares, SORT_DESC, $posts_shares);
+        $posts_shares_output = array_slice($posts_shares, 0, 5);
+
+        $array_shares_and_likes = array_merge( array('posts_likes' => $posts_likes_output ), array('posts_shares' => $posts_shares_output) );
+       
+        update_option( 'abm_data', $array_shares_and_likes );
+        
+        ?>
+        <script type="text/javascript">
+		<!--
+		   window.location = '/wp-admin';
+		//-->
+        </script>
+        <?php 
         
     }
     
-    $html.= '</tbody></table>';
-    echo $html, "<br />";
-    
-    
-    // About SHARES
-    $html = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html.= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="share" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-share.png" /></th></tr></thead><tbody>';
-    $i=0;
-    foreach ($posts_share as $post) {
-        $i++;
-        if( $i<=5 ) {
-            $html.= '<tr>';
-            $html.= '<th><a href="' . $post['permalink'] . '">' . $post['title'] . '</a></th>';
-            $html.= '<td class="facebook_count">' . $post['share_count'] . '</td>';
-            $html.= '</tr>';
-        }
-        else
-            break;
-    }
-    
-    $html.= '</tbody></table>';
+    // display
+    $html  = '<form name="form_posts_on_facebook" id="form_posts_on_facebook" action="" method="post">';
+    $html .= '<input type="submit" name="sub_posts_on_facebook" id="sub_posts_on_facebook" value="Get data" />';
+    $html .= '<span id="info-get-data">(It can takes several minutes depending on the number of posts)</span>';
+    $html .= '</form>';
     echo $html;
-     
+    
+	
+    // About LIKES
+    $html_likes  = '<table cellpadding="0" cellspacing="0" class="table-list">';
+    $html_likes .= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="like" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-like.png" /></th></tr></thead><tbody>';
+    if( isset($data) && !empty($data) ) {
+        foreach ($data['posts_likes'] as $post) {
+            $html_likes .= '<tr>';
+            $html_likes .= '<th><a href="' . $post['permalink'] . '">' . $post['title'] . '</a></th>';
+            $html_likes .= '<td class="facebook_count">' . $post['like_count'] . '</td>';
+            $html_likes .= '</tr>';
+        }       
+    }
+    $html_likes .= '</tbody></table>';
+    echo $html_likes, "<br />";
+
+
+     // About SHARES
+    $html_shares  = '<table cellpadding="0" cellspacing="0" class="table-list">';
+    $html_shares .= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="share" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-share.png" /></th></tr></thead><tbody>';
+    if( isset($data) && !empty($data) ) {
+        foreach ($data['posts_shares'] as $post) {
+            $html_shares .= '<tr>';
+            $html_shares .= '<th><a href="' . $post['permalink'] . '">' . $post['title'] . '</a></th>';
+            $html_shares .= '<td class="facebook_count">' . $post['share_count'] . '</td>';
+            $html_shares .= '</tr>';
+        }
+    }
+    $html_shares .= '</tbody></table>';
+    echo $html_shares, "<br />";
+	
 }

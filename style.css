@@ -22,3 +22,6 @@
 #dashboard-widgets .table-cols td.max div.pourcent { background: #9ACD34 }
 #dashboard-widgets .table-cols td.max span.count { color: #6A9929 }
 #dashboard-widgets .table-cols th.max span { background: #7BA329 }
+
+#form_posts_on_facebook { text-align: center }
+#info-get-data { color:#666; font-size: 11px; margin-left: 10px }

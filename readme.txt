@@ -3,7 +3,7 @@ Contributors: atalanta-agency
 Tags: blog metrics, blog analytics
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.4
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,10 @@ Best time to publish:
 *   When do your posts generate the most comments?
 *   When do you post the most?
 
+Facebook:
+
+*   5 posts which generate the most Facebook shares and likes
+
 == Installation ==
 
 1. Upload advanced-blog-metrics.zip
@@ -51,6 +55,10 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 
 == Changelog ==
+= 1.4.1 =
+* Bugfix: Automatic requests to Facebook made the "Facebook shares and likes" widget crash when the number of posts was very high. We fixed it by turning it into a "get data" button.
+* Bugfix: Starting date: average number's calculation of comments and posts per day use the good date range.
+
 = 1.4 =
 * Adds the "5 posts which generate the most Facebook shares and likes" widget.
 * Allows you to learn more about the virality of your posts.

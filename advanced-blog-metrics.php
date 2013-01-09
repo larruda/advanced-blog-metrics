@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.4.1
+Version: 1.4.2
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -20,7 +20,6 @@ $options = (array)get_option('abm_options');
 $commentregistration = (bool)get_option('comment_registration');
 // start of week
 $startofweek = get_option('start_of_week');
-
 
 // Weekdays
 $days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
@@ -219,7 +218,7 @@ function dashboard_comments_per_day() {
 }
     
 // Widget #3 : Comments
-function dashboard_comments() {   
+function dashboard_comments() {
     global $queries, $wpdb, $elapseddays;
     $total = current( $wpdb->get_col( $queries['comments_total'], 0 ) );
     $posts = current( $wpdb->get_col( $queries['posts_total'], 0 ) );
@@ -333,47 +332,61 @@ function dashboard_posts_facebook() {
     // Add the option if it does not exist yet
     add_option('abm_data', '');
     
-	// data of the plugin
+    // data of the plugin
     $data = get_option('abm_data');
     
     // If the admin cliks on the button, the queries will occur and it could be long depending on the number of posts
-    if( isset($_POST['sub_posts_on_facebook']) && 'Get data' == $_POST['sub_posts_on_facebook'] ) {
+    if( isset($_POST['sub_posts_on_facebook']) && 'Get/Update data' == $_POST['sub_posts_on_facebook'] ) {
         
         $posts_likes = array();
         $posts_shares = array();
+        $query_urls = array();
+        $posts_permalink_title = array();
         
-        $results = $wpdb->get_results( $queries['posts'] );
-        foreach ($results as $result) {
-            $fql_query_url = 'https://graph.facebook.com/' . '/fql?q=SELECT+url,share_count,like_count+FROM+link_stat+WHERE+url=\'' . get_permalink( $result->ID ) . '\'';
+        $nb_url_by_query = 100;        
+        
+        $posts = $wpdb->get_results( $queries['posts'] );
+ 
+        foreach( $posts as $post ) {            
+            $query_urls[] = get_permalink( $post->ID );
+            $posts_permalink_title[get_permalink( $post->ID )] = $post->post_title;
+        }
+        
+        $array_permalinks = array_chunk($query_urls, $nb_url_by_query);
+        
+        foreach( $array_permalinks as $permalinks ){
+            $q = implode("','", $permalinks);
+            $fql_query_url = "https://graph.facebook.com/fql?q=SELECT+url,+share_count,+like_count+FROM+link_stat+WHERE+url+IN('".$q."')";
             $fql_query_result = file_get_contents($fql_query_url);
             $fql_query_obj = json_decode($fql_query_result, true);
 
-            $posts_likes[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'like_count' => $fql_query_obj[data][0]['like_count']);
-            $posts_shares[] = array('title' =>$result->post_title, 'permalink' => $fql_query_obj[data][0]['url'], 'share_count' => $fql_query_obj[data][0]['share_count']);   
+            foreach($fql_query_obj[data] as $a) {
+                $posts_likes[] = array('title' =>$posts_permalink_title[$a['url']], 'permalink' => $a['url'], 'like_count' => $a['like_count']);
+                $posts_shares[] = array('title' =>$posts_permalink_title[$a['url']], 'permalink' => $a['url'], 'share_count' => $a['share_count']);
+            }
         }
-
         
-        foreach($posts_likes as $k => $v) {
+        foreach( $posts_likes as $k => $v ) {
             $likes[$k] = $v['like_count'];
         }
-        array_multisort($likes, SORT_DESC, $posts_likes);        
+        array_multisort( $likes, SORT_DESC, $posts_likes );        
         $posts_likes_output = array_slice($posts_likes, 0, 5);
 
-        foreach($posts_shares as $k => $v) {
+        foreach( $posts_shares as $k => $v ) {
             $shares[$k] = $v['share_count'];
         }
-        array_multisort($shares, SORT_DESC, $posts_shares);
-        $posts_shares_output = array_slice($posts_shares, 0, 5);
+        array_multisort( $shares, SORT_DESC, $posts_shares );
+        $posts_shares_output = array_slice( $posts_shares, 0, 5 );
 
         $array_shares_and_likes = array_merge( array('posts_likes' => $posts_likes_output ), array('posts_shares' => $posts_shares_output) );
        
         update_option( 'abm_data', $array_shares_and_likes );
         
-        ?>
+         ?>
         <script type="text/javascript">
-		<!--
-		   window.location = '/wp-admin';
-		//-->
+            <!--
+            window.location = '/wp-admin';
+            //-->
         </script>
         <?php 
         
@@ -381,7 +394,7 @@ function dashboard_posts_facebook() {
     
     // display
     $html  = '<form name="form_posts_on_facebook" id="form_posts_on_facebook" action="" method="post">';
-    $html .= '<input type="submit" name="sub_posts_on_facebook" id="sub_posts_on_facebook" value="Get data" />';
+    $html .= '<input type="submit" name="sub_posts_on_facebook" id="sub_posts_on_facebook" value="Get/Update data" />';
     $html .= '<span id="info-get-data">(It can takes several minutes depending on the number of posts)</span>';
     $html .= '</form>';
     echo $html;

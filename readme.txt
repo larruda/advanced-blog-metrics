@@ -3,7 +3,7 @@ Contributors: atalanta-agency
 Tags: blog metrics, blog analytics
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ Posts:
 *   Total number of posts on your blog
 *   Average number of posts per day
 *   Average number of words per post
-*   5 posts which generate the most Facebook shares and likes
+
 
 Comments:
 
@@ -55,6 +55,9 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 
 == Changelog ==
+= 1.4.2 =
+* Bugfix: optimization of the Facebook widget in order to minimize the data loading time (100x faster)
+
 = 1.4.1 =
 * Bugfix: Automatic requests to Facebook made the "Facebook shares and likes" widget crash when the number of posts was very high. We fixed it by turning it into a "get data" button.
 * Bugfix: Starting date: average number's calculation of comments and posts per day use the good date range.

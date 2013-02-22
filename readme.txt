@@ -55,6 +55,9 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 
 == Changelog ==
+= 1.4.3.1 =
+* Spelling mistake correction.
+
 = 1.4.3 =
 * Bugfix: fixes the issue when you have no comment or no post. Divided per 0 made a bug in our calculations.
 

@@ -537,7 +537,7 @@ function dashboard_posts_facebook() {
     // display
     $html  = '<form name="form_posts_on_facebook" id="form_posts_on_facebook" action="" method="post">';
     $html .= '<input type="submit" name="sub_posts_on_facebook" id="sub_posts_on_facebook" value="Get/Update data" />';
-    $html .= '<span id="info-get-data">(It can takes several minutes depending on the number of posts)</span>';
+    $html .= '<span id="info-get-data">(Synchronization may last several minutes depending on the number of posts)</span>';
     $html .= '</form>';
     echo $html;
 

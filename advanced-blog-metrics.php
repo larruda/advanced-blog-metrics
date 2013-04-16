@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.4.3
+Version: 1.4.4
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -11,6 +11,8 @@ License: GPL2
 
 /* @var $wpdb wpdb */
 global $wpdb;
+
+load_plugin_textdomain( 'adv-blog-metrics', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 /********** OPTIONS **********/
 // general options of the plugin
@@ -22,7 +24,7 @@ $commentregistration = (bool)get_option('comment_registration');
 $startofweek = get_option('start_of_week');
 
 // Weekdays
-$days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+$days = array( __('Sunday','adv-blog-metrics'), __('Monday','adv-blog-metrics'), __('Tuesday','adv-blog-metrics'), __('Wednesday','adv-blog-metrics'), __('Thursday','adv-blog-metrics'), __('Friday', 'adv-blog-metrics') , __('Saturday','adv-blog-metrics') );
 
 // Starting date
 if (!empty($options['starting_date'])) {
@@ -76,8 +78,8 @@ function abm_admin_init() {
     wp_enqueue_style( 'advanced-blog-metrics' );
 
     register_setting( 'abm_options', 'abm_options', 'abm_options_validate' );
-    add_settings_section( 'abm_options_general', 'Settings', 'abm_options_general_text', 'abm_options' );
-    add_settings_field( 'abm_options_starting_date', '<label for="abm_options_starting_date">Starting date</label>', 'abm_options_starting_date_text', 'abm_options', 'abm_options_general' );
+    add_settings_section( 'abm_options_general', __('Settings','adv-blog-metrics'), 'abm_options_general_text', 'abm_options' );
+    add_settings_field( 'abm_options_starting_date', '<label for="abm_options_starting_date">'.__('Starting date','adv-blog-metrics').'</label>', 'abm_options_starting_date_text', 'abm_options', 'abm_options_general' );
 
     // access only for administrator
     if (current_user_can('administrator') ) {
@@ -86,14 +88,14 @@ function abm_admin_init() {
 }
 
 function abm_admin_menu() {
-    add_menu_page( 'Advanced Blog Metrics', 'Advanced<br />Blog Metrics', 'administrator', 'advanced-blog-metrics', 'abm_options_page' );
+    add_menu_page( __('Advanced Blog Metrics','adv-blog-metrics'), 'Advanced<br />Blog Metrics', 'administrator', 'advanced-blog-metrics', 'abm_options_page' );
 }
 
 /********** SETTINGS **********/
 function abm_options_page() {
     ob_start();
     echo '<div class="wrap">';
-    echo '<h2>Advanced Blog Metrics</h2>';
+    echo '<h2>' .__('Advanced Blog Metrics','adv-blog-metrics'). '</h2>';
     echo '<form action="options.php" method="post">';
     settings_errors();
     settings_fields( 'abm_options' );
@@ -108,8 +110,8 @@ function abm_options_general_text() { }
 
 function abm_options_starting_date_text() {
     $options = get_option( 'abm_options' );
-    echo '<input type="text" size="12" maxlength="10" id="abm_options_starting_date" name="abm_options[starting_date]" value="' . $options['starting_date'] . '" title="Date format: YYYY-MM-DD" /><span id="local-time">Date format: YYYY-MM-DD</span>';
-    echo '<p class="description">If you leave this field empty, Advanced Blog Metrics uses the date of your first post by default.</p>';
+    echo '<input type="text" size="12" maxlength="10" id="abm_options_starting_date" name="abm_options[starting_date]" value="' . $options['starting_date'] . '" title="'.__('Date format: YYYY-MM-DD','adv-blog-metrics') . '" /><span id="local-time">'.__('Date format: YYYY-MM-DD','adv-blog-metrics') . '</span>';
+    echo '<p class="description">' .__('If you leave this field empty, Advanced Blog Metrics uses the date of your first post by default.' ,'adv-blog-metrics').'</p>';
 }
 
 function abm_options_validate($posted) {
@@ -117,11 +119,11 @@ function abm_options_validate($posted) {
     $cleaned = array();
 
     if ( !empty( $posted['starting_date'] ) && !preg_match( '`[0-9]{4}\-[0-9]{2}\-[0-9]{2}`', $posted['starting_date'] ) ) {
-        add_settings_error('abm_options_starting_date', 'abm_options_starting_date_bad_format', 'You did not use the expected date format. Please, fill in the starting date with the following format: YYYY-MM-DD');
+        add_settings_error('abm_options_starting_date', 'abm_options_starting_date_bad_format', __('You did not use the expected date format. Please, fill in the starting date with the following format: YYYY-MM-DD','adv-blog-metrics'));
     } elseif ( !empty( $posted['starting_date'] ) ) {
         list( $year, $month, $day ) = explode( '-', $posted['starting_date'] );
         if ( !checkdate( $month, $day, $year ) ) {
-            add_settings_error('abm_options_starting_date', 'abm_options_starting_date_not_valid', 'You have entered a date which does not exist. Please, fill in the starting date with a valid date.');
+            add_settings_error('abm_options_starting_date', 'abm_options_starting_date_not_valid', __('You have entered a date which does not exist. Please, fill in the starting date with a valid date','adv-blog-metrics'));
         }
     }
 
@@ -139,23 +141,23 @@ function abm_options_validate($posted) {
 /********** INIT **********/
 function abm_dashboard_init() {
     // Widget #1
-    wp_add_dashboard_widget( 'dashboard_comments_per_post', '5 posts which generate the most comments', 'dashboard_comments_per_post' );
+    wp_add_dashboard_widget( 'dashboard_comments_per_post', __('5 posts which generate the most comments','adv-blog-metrics'), 'dashboard_comments_per_post' );
     // Widget #2
-    wp_add_dashboard_widget( 'dashboard_comments_per_day', 'When do your posts generate the most comments?', 'dashboard_comments_per_day' );
+    wp_add_dashboard_widget( 'dashboard_comments_per_day',  __('When do your posts generate the most comments?','adv-blog-metrics'), 'dashboard_comments_per_day' );
     // Widget #3
-    wp_add_dashboard_widget( 'dashboard_comments', 'Comments', 'dashboard_comments' );
+    wp_add_dashboard_widget( 'dashboard_comments',  __('Comments','adv-blog-metrics'), 'dashboard_comments' );
     // Widget #4
-    wp_add_dashboard_widget( 'dashboard_comments_per_author', '5 authors who comment the most', 'dashboard_comments_per_author' );
+    wp_add_dashboard_widget( 'dashboard_comments_per_author',  __('5 authors who comment the most','adv-blog-metrics'), 'dashboard_comments_per_author' );
     // Widget #5
-    wp_add_dashboard_widget( 'dashboard_posts', 'Posts', 'dashboard_posts' );
+    wp_add_dashboard_widget( 'dashboard_posts',  __('Posts','adv-blog-metrics'), 'dashboard_posts' );
     // Widget #6
-    wp_add_dashboard_widget( 'dashboard_posts_per_day', 'When do you post the most?', 'dashboard_posts_per_day' );
+    wp_add_dashboard_widget( 'dashboard_posts_per_day',  __('When do you post the most?','adv-blog-metrics'), 'dashboard_posts_per_day' );
     // Widget #7
-    wp_add_dashboard_widget( 'dashboard_posts_facebook', '5 posts which generate the most Facebook shares and likes', 'dashboard_posts_facebook' );
+    wp_add_dashboard_widget( 'dashboard_posts_facebook',  __('5 posts which generate the most Facebook shares and likes','adv-blog-metrics'), 'dashboard_posts_facebook' );
 }
 
 function abm_plugin_action_links( $links, $file ) {
-    array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=advanced-blog-metrics' ) . '">' . __( 'Settings' ) . '</a>' );
+    array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=advanced-blog-metrics' ) . '">' . __( 'Settings','adv-blog-metrics' ) . '</a>' );
     return $links;
 }
 
@@ -166,7 +168,7 @@ function dashboard_comments_per_post() {
     global $queries, $wpdb;
     $posts = $wpdb->get_results( $queries['comments_per_post'] );
     $html  = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html .= '<thead><tr><th width="85%">Post</th><th class="comment_count">Comments</th></tr></thead>';
+    $html .= '<thead><tr><th width="85%">'.__('Post','adv-blog-metrics').'</th><th class="comment_count">'.__('Comments','adv-blog-metrics').'</th></tr></thead>';
     $html .= '<tbody>';
     foreach ( $posts as $post ) {
         $html .= '<tr>';
@@ -264,10 +266,10 @@ function dashboard_comments() {
         $html = '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
 		$html .= '<thead>';
 		$html .= '<tr>';
-		$html .= '<th width="25%">Approved comments</th>';
-		$html .= '<th width="25%">Comments per Day</th>';
-		$html .= '<th width="25%">Comments per Post</th>';
-		$html .= '<th width="25%">Words per Comment</th>';
+		$html .= '<th width="25%">'.__('Approved comments','adv-blog-metrics').'</th>';
+		$html .= '<th width="25%">'.__('Comments per Day','adv-blog-metrics').'</th>';
+		$html .= '<th width="25%">'.__('Comments per Post','adv-blog-metrics').'</th>';
+		$html .= '<th width="25%">'.__('Words per Comment','adv-blog-metrics').'</th>';
 		$html .= '</tr>';
 		$html .= '</thead>';
 		$html .= '<tbody>';
@@ -287,10 +289,10 @@ function dashboard_comments() {
         $html = '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
         $html .= '<thead>';
         $html .= '<tr>';
-        $html .= '<th width="25%">Approved comments</th>';
-        $html .= '<th width="25%">Comments per Day</th>';
-        $html .= '<th width="25%">Comments per Post</th>';
-        $html .= '<th width="25%">Words per Comment</th>';
+        $html .= '<th width="25%">'.__('Approved comments','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'.__('Comments per Day','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'.__('Comments per Post','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'.__('Words per Comment','adv-blog-metrics').'</th>';
         $html .= '</tr>';
         $html .= '</thead>';
         $html .= '<tbody>';
@@ -324,16 +326,16 @@ function dashboard_comments_per_author() {
         $authors = $wpdb->get_results($queries['comments_per_author']);
     }
     $html  = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html .= '<thead><tr><th width="85%">Author</th><th class="comment_count">Comments</th></tr></thead><tbody>';
+    $html .= '<thead><tr><th width="85%">'.__('Author','adv-blog-metrics').'</th><th class="comment_count">'.__('Comments','adv-blog-metrics').'</th></tr></thead><tbody>';
     if ($commentregistration) {
         foreach ($authors as $author) {
             $html .= '<tr>';
-            $html .= '<th><a href="' . get_admin_url() . 'user-edit.php?user_id='.$author->ID . '" title="Modifier">' . $author->display_name . '</a></th>';
+            $html .= '<th><a href="' . get_admin_url() . 'user-edit.php?user_id='.$author->ID . '" title="Modify">' . $author->display_name . '</a></th>';
             $html .= '<td class="comment_count">' . $author->comment_count . '</td>';
             $html .= '</tr>';
         }
     } else {
-        $html .= '<tr><td colspan="2"><p>Note that you need to check "Users must be registered and logged in to comment" in the Wordpress Settings->Discussion to see data in the "5 authors who comments the most" widget.</p><p><a class="button" href="' . get_admin_url() . 'options-discussion.php">View discussion options</p></td></tr>';
+        $html .= '<tr><td colspan="2"><p>'.__('Note that you need to check "Users must be registered and logged in to comment" in the Wordpress Settings->Discussion to see data in the "5 authors who comments the most" widget.','adv-blog-metrics').'</p><p><a class="button" href="' . get_admin_url() . 'options-discussion.php">'.__('View discussion options','adv-blog-metrics').'</p></td></tr>';
     }
     $html .= '</tbody></table>';
     echo $html;
@@ -350,10 +352,10 @@ function dashboard_posts() {
 
         $html  = '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
         $html .= '<thead><tr>';
-        $html .= '<th width="25%">Posts</th>';
-        $html .= '<th width="25%">Posts per Day</th>';
-        $html .= '<th width="25%">Comments per Post</th>';
-        $html .= '<th width="25%">Words per Post</th>';
+        $html .= '<th width="25%">'._('Posts','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'._('Posts per Day','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'._('Comments per Post','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'._('Words per Post','adv-blog-metrics').'</th>';
         $html .= '</tr></thead><tbody><tr>';
         $html .= '<td class="number"><span>' . $total . '</span></td>';
         $html .= '<td class="number"><span>' . round( $total / $elapseddays, 2 ) . '</span></td>';
@@ -367,10 +369,10 @@ function dashboard_posts() {
 
         $html  = '<table cellpadding="0" cellspacing="0" class="table-list table-summary">';
         $html .= '<thead><tr>';
-        $html .= '<th width="25%">Posts</th>';
-        $html .= '<th width="25%">Posts per Day</th>';
-        $html .= '<th width="25%">Comments per Post</th>';
-        $html .= '<th width="25%">Words per Post</th>';
+        $html .= '<th width="25%">'.__('Posts','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'.__('Posts per Day','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'.__('Comments per Post','adv-blog-metrics').'</th>';
+        $html .= '<th width="25%">'.__('Words per Post','adv-blog-metrics').'</th>';
         $html .= '</tr></thead><tbody><tr>';
         $html .= '<td class="number"><span>' . $total . '</span></td>';
         if( 0!==(int)$elapseddays )
@@ -536,15 +538,15 @@ function dashboard_posts_facebook() {
 
     // display
     $html  = '<form name="form_posts_on_facebook" id="form_posts_on_facebook" action="" method="post">';
-    $html .= '<input type="submit" name="sub_posts_on_facebook" id="sub_posts_on_facebook" value="Get/Update data" />';
-    $html .= '<span id="info-get-data">(Synchronization may last several minutes depending on the number of posts)</span>';
+    $html .= '<input type="submit" name="sub_posts_on_facebook" id="sub_posts_on_facebook" value="'.__('Get/Update data','adv-blog-metrics').'" />';
+    $html .= '<span id="info-get-data">'.__('(Synchronization may last several minutes depending on the number of posts)','adv-blog-metrics').'</span>';
     $html .= '</form>';
     echo $html;
 
 
     // About LIKES
     $html_likes  = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html_likes .= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="like" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-like.png" /></th></tr></thead><tbody>';
+    $html_likes .= '<thead><tr><th width="85%">'.__('Post','adv-blog-metrics').'</th><th class="facebook_count"><img alt="like" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-like.png" /></th></tr></thead><tbody>';
     if( isset($data) && !empty($data) ) {
         foreach ($data['posts_likes'] as $post) {
             $html_likes .= '<tr>';
@@ -559,7 +561,7 @@ function dashboard_posts_facebook() {
 
      // About SHARES
     $html_shares  = '<table cellpadding="0" cellspacing="0" class="table-list">';
-    $html_shares .= '<thead><tr><th width="85%">Post</th><th class="facebook_count"><img alt="share" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-share.png" /></th></tr></thead><tbody>';
+    $html_shares .= '<thead><tr><th width="85%">'.__('Post','adv-blog-metrics').'</th><th class="facebook_count"><img alt="share" src="http://www.atalanta.fr/advanced-blog-metrics/facebook-share.png" /></th></tr></thead><tbody>';
     if( isset($data) && !empty($data) ) {
         foreach ($data['posts_shares'] as $post) {
             $html_shares .= '<tr>';

@@ -3,7 +3,7 @@ Contributors: atalanta-agency
 Tags: blog metrics, blog analytics
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,10 @@ Facebook:
 
 *   5 posts which generate the most Facebook shares and likes
 
+Multilanguage:
+*	English
+*	Brazilian
+
 == Installation ==
 
 1. Upload advanced-blog-metrics.zip
@@ -55,6 +59,10 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 
 == Changelog ==
+= 1.4.4 =
+* Multilanguage version: adding Brazilian translation. Thank you Andrecarrano. We appreciate.
+* Multilanguage version: adding French translation.
+
 = 1.4.3 =
 * Bugfix: fixes the issue when you have no comment or no post. Divided per 0 made a bug in our calculations.
 

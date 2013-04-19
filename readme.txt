@@ -3,7 +3,7 @@ Contributors: atalanta-agency
 Tags: blog metrics, blog analytics
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,7 @@ Facebook:
 Multilanguage:
 *	English
 *	Brazilian
+*	French
 
 == Installation ==
 
@@ -59,6 +60,9 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 
 == Changelog ==
+= 1.4.5 =
+* Forgot the po/mo files in the 1.4.4 version... Sorry about having been a dummy on that one!
+
 = 1.4.4 =
 * Multilanguage version: adding Brazilian translation. Thank you Andrecarrano. We appreciate.
 * Multilanguage version: adding French translation.

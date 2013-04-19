@@ -1,0 +1,193 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Advanced Blog Metrics v1.4.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2013-04-07 04:25:16+0000\n"
+"Last-Translator: _wopi_ <suporte@wopi.com.br>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: CSL v1.x\n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: BRAZIL\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: advanced-blog-metrics.php:114
+#@ adv-blog-metrics
+msgid "If you leave this field empty, Advanced Blog Metrics uses the date of your first post by default."
+msgstr "Se você deixar este campo em branco, o sistema usará por padrão a data do primeiro post."
+
+#: advanced-blog-metrics.php:81
+#: advanced-blog-metrics.php:160
+#@ adv-blog-metrics
+msgid "Settings"
+msgstr "Configurações"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Sunday"
+msgstr "Domingo"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Monday"
+msgstr "Segunda"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Tuesday"
+msgstr "Terça"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Wednesday"
+msgstr "Quarta"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Thursday"
+msgstr "Quinta"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Friday"
+msgstr "Sexta"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Saturday"
+msgstr "Sábado"
+
+#: advanced-blog-metrics.php:144
+#@ adv-blog-metrics
+msgid "5 posts which generate the most comments"
+msgstr "5 posts que geraram mais comentários"
+
+#: advanced-blog-metrics.php:82
+#@ adv-blog-metrics
+msgid "Starting date"
+msgstr "Data de Início"
+
+#: advanced-blog-metrics.php:146
+#@ adv-blog-metrics
+msgid "When do your posts generate the most comments?"
+msgstr "Quando seus posts geram mais comentários?"
+
+#: advanced-blog-metrics.php:148
+#: advanced-blog-metrics.php:329
+#@ adv-blog-metrics
+msgid "Comments"
+msgstr "Comentários"
+
+#: advanced-blog-metrics.php:150
+#@ adv-blog-metrics
+msgid "5 authors who comment the most"
+msgstr "5 autores que mais comentaram"
+
+#: advanced-blog-metrics.php:152
+#: advanced-blog-metrics.php:372
+#@ adv-blog-metrics
+msgid "Posts"
+msgstr "Posts"
+
+#: advanced-blog-metrics.php:154
+#@ adv-blog-metrics
+msgid "When do you post the most?"
+msgstr "Quando você mais posta?"
+
+#: advanced-blog-metrics.php:156
+#@ adv-blog-metrics
+msgid "5 posts which generate the most Facebook shares and likes"
+msgstr "5 Posts que geraram mais compartilhamentos e curtir"
+
+#: advanced-blog-metrics.php:91
+#: advanced-blog-metrics.php:98
+#@ adv-blog-metrics
+msgid "Advanced Blog Metrics"
+msgstr "Estatísticas Avançadas de Postagem"
+
+#: advanced-blog-metrics.php:113
+#@ adv-blog-metrics
+msgid "Date format: YYYY-MM-DD"
+msgstr "Formato de Data: YYYY-MM-DD"
+
+#: advanced-blog-metrics.php:122
+#@ adv-blog-metrics
+msgid "You did not use the expected date format. Please, fill in the starting date with the following format: YYYY-MM-DD"
+msgstr "Você não usou o formato correto. Por favor preencha a data no seguinte formato (ano-mês-dia): YYYY-MM-DD"
+
+#: advanced-blog-metrics.php:126
+#@ adv-blog-metrics
+msgid "You have entered a date which does not exist. Please, fill in the starting date with a valid date"
+msgstr "Você entrou com uma data não existente. Preencha com uma data válida."
+
+#: advanced-blog-metrics.php:549
+#: advanced-blog-metrics.php:564
+#@ adv-blog-metrics
+msgid "Post"
+msgstr "Post"
+
+#: advanced-blog-metrics.php:292
+#@ adv-blog-metrics
+msgid "Approved comments"
+msgstr "Comentários Aprovados"
+
+#: advanced-blog-metrics.php:293
+#@ adv-blog-metrics
+msgid "Comments per Day"
+msgstr "Comentários por Dia"
+
+#: advanced-blog-metrics.php:294
+#: advanced-blog-metrics.php:374
+#@ adv-blog-metrics
+msgid "Comments per Post"
+msgstr "Comentários por Post"
+
+#: advanced-blog-metrics.php:295
+#@ adv-blog-metrics
+msgid "Words per Comment"
+msgstr "Palavras por comentário"
+
+#: advanced-blog-metrics.php:329
+#@ adv-blog-metrics
+msgid "Author"
+msgstr "Autor"
+
+#: advanced-blog-metrics.php:338
+#@ adv-blog-metrics
+msgid "Note that you need to check \"Users must be registered and logged in to comment\" in the Wordpress Settings->Discussion to see data in the \"5 authors who comments the most\" widget."
+msgstr "Note que você precisa marcar a opção \"Usuários devem estar registrados para comentar\" nas configurações de discussão para ver os dados de \"5 autores que mais comentaram\""
+
+#: advanced-blog-metrics.php:338
+#@ adv-blog-metrics
+msgid "View discussion options"
+msgstr "Ver opções de discussão"
+
+#: advanced-blog-metrics.php:373
+#@ adv-blog-metrics
+msgid "Posts per Day"
+msgstr "Posts por Dia"
+
+#: advanced-blog-metrics.php:375
+#@ adv-blog-metrics
+msgid "Words per Post"
+msgstr "Palavras por Post"
+
+#: advanced-blog-metrics.php:541
+#@ adv-blog-metrics
+msgid "Get/Update data"
+msgstr "Pegar/Atualizar Dados"
+
+#: advanced-blog-metrics.php:542
+#@ adv-blog-metrics
+msgid "(Synchronization may last several minutes depending on the number of posts)"
+msgstr "(A Sincronização pode levar vários minutos dependendo do número de posts)"
+

@@ -3,7 +3,7 @@
 Plugin Name: Advanced Blog Metrics
 Plugin URI: http://www.atalanta.fr/advanced-blog-metrics-wordpress-plugin
 Description: Advanced Blog Metrics is an analytics tool dedicated to bloggers. This plugin allows you to improve your blog performance
-Version: 1.4.5
+Version: 1.5
 Author: Atalanta
 Author URI: http://www.atalanta.fr/
 License: GPL2
@@ -82,13 +82,23 @@ function abm_admin_init() {
     add_settings_field( 'abm_options_starting_date', '<label for="abm_options_starting_date">'.__('Starting date','adv-blog-metrics').'</label>', 'abm_options_starting_date_text', 'abm_options', 'abm_options_general' );
 
     // access only for administrator
-    if (current_user_can('administrator') ) {
+    if (current_user_can('administrator') || current_user_can('editor') ) {
         add_action( 'wp_dashboard_setup', 'abm_dashboard_init' );
     }
 }
 
 function abm_admin_menu() {
-    add_menu_page( __('Advanced Blog Metrics','adv-blog-metrics'), 'Advanced<br />Blog Metrics', 'administrator', 'advanced-blog-metrics', 'abm_options_page' );
+    if (current_user_can('administrator') ) {
+        add_menu_page( __('Advanced Blog Metrics', 'adv-blog-metrics'), 'Advanced<br />Blog Metrics', 'administrator', 'advanced-blog-metrics');
+        add_submenu_page('advanced-blog-metrics', __('Dashboard', 'adv-blog-metrics'), __('Dashboard', 'adv-blog-metrics'), 'administrator', 'advanced-blog-metrics', 'display_all_widgets');
+        add_submenu_page('advanced-blog-metrics', __('Settings', 'adv-blog-metrics'), __('Settings', 'adv-blog-metrics'), 'administrator', 'advanced-blog-metrics-options', 'abm_options_page');
+    }
+    elseif( current_user_can('editor') ){
+        add_menu_page( __('Advanced Blog Metrics', 'adv-blog-metrics'), 'Advanced<br />Blog Metrics', 'editor', 'advanced-blog-metrics');
+        add_submenu_page('advanced-blog-metrics', __('Dashboard', 'adv-blog-metrics'), __('Dashboard', 'adv-blog-metrics'), 'editor', 'advanced-blog-metrics', 'display_all_widgets');
+        add_submenu_page('advanced-blog-metrics', __('Settings', 'adv-blog-metrics'), __('Settings', 'adv-blog-metrics'), 'editor', 'advanced-blog-metrics-options', 'abm_options_page');
+    }
+    
 }
 
 /********** SETTINGS **********/
@@ -134,6 +144,69 @@ function abm_options_validate($posted) {
     }
 
     return $cleaned;
+}
+
+function display_all_widgets(){
+    // Widget #1
+    echo '<h2>'.__('Dashboard', 'adv-blog-metrics').'</h2>';
+    echo '<div id="onglet-widgets" class="metabox-holder postbox-container" style="width:50%">';
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('5 posts which generate the most comments','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_comments_per_post();
+        echo '</div>';
+    echo '</div>';
+    
+    // Widget #2
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('When do your posts generate the most comments?','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_comments_per_day();
+        echo '</div>';
+    echo '</div>';
+    
+    // Widget #3
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('Comments','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_comments();
+        echo '</div>';
+    echo '</div>';
+    
+    // Widget #4
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('5 authors who comment the most','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_comments_per_author();
+        echo '</div>';
+    echo '</div>';
+    
+    // Widget #5
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('Posts','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_posts();
+        echo '</div>';
+    echo '</div>';
+    
+    // Widget #6
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('When do you post the most?','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_posts_per_day();
+        echo '</div>';
+    echo '</div>';
+    
+    // Widget #7
+    echo '<div class="postbox">';
+        echo '<h3 class="hndle">'.__('5 posts which generate the most Facebook shares and likes','adv-blog-metrics').'</h3>';
+        echo '<div class="inside">';
+            dashboard_posts_facebook();
+        echo '</div>';
+    echo '</div>';
+    
+    echo '</div>';
+    
 }
 
 

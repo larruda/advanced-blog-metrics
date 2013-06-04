@@ -3,7 +3,7 @@ Contributors: atalanta-agency
 Tags: blog metrics, blog analytics
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.4.5
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,10 @@ Note that you need to check "Users must be registered and logged in to comment" 
 
 
 == Changelog ==
+= 1.5 =
+*  allow only the stats to be shown to Admin/Editors
+*  the widgets are also displayed on a separate page outside of the WordPress dashboard: in a submenu under the Advanced Blog Metrics menu item
+
 = 1.4.5 =
 * Forgot the po/mo files in the 1.4.4 version... Sorry about having been a dummy on that one!
 

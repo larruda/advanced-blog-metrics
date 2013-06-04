@@ -1,0 +1,52 @@
+#dashboard-widgets .table-list { width: 100% }
+#dashboard-widgets .table-list th { text-align: left }
+#dashboard-widgets .table-list thead th.comment_count, #dashboard-widgets .table-list thead th.facebook_count { text-align: right !important}
+#dashboard-widgets .table-list thead th { border-bottom: 1px solid #ECECEC; color: #8F8F8F; font-size: 14px; font-weight: normal }
+#dashboard-widgets .table-list tbody th, #dashboard-widgets .table-list tbody td { font-weight: normal; padding : 4px }
+#dashboard-widgets .table-list tbody td.comment_count, #dashboard-widgets .table-list tbody td.facebook_count { text-align: right }
+#dashboard-widgets .table-list tbody tr:nth-child(odd) { background: #fff }
+#dashboard-widgets .table-list tbody td.number { font-size: 400%; line-height: 2em; text-align: center }
+#dashboard-widgets .table-list tbody td.number span { border-right: 1px solid #ccc; display: inline-block; width: 100%; margin: 20px 0 }
+#dashboard-widgets .table-list tbody td.number:last-child span { border-right: none }
+
+#dashboard-widgets .table-summary tbody td.number { font-size: 350%; line-height: 2em; text-align: center }
+#dashboard-widgets .table-summary tbody td.number span { border-right: 1px solid #ccc; display: inline-block; width: 100%; margin: 20px 0 }
+#dashboard-widgets .table-summary tbody td.number:last-child span { border-right: none }
+
+#dashboard-widgets .table-cols { width: 100%; text-align: center; margin: 0 auto }
+#dashboard-widgets .table-cols td.value { vertical-align: bottom; border-bottom: 1px solid #fff }
+#dashboard-widgets .table-cols td div.pourcent { background: #ccc; margin: 0 7px; display: block }
+#dashboard-widgets .table-cols td span.count { color: #989898; font-weight: bold; display: block; padding: 10px 0; font-size: 18px; margin: 0 7px }
+#dashboard-widgets .table-cols th.day { color: #fff; font-weight: bold; text-align: center; width: 14% }
+#dashboard-widgets .table-cols th.day span { display: block; margin: 0 7px; padding: 3px 0; background: #A3A3A3 }
+#dashboard-widgets .table-cols td.max div.pourcent { background: #9ACD34 }
+#dashboard-widgets .table-cols td.max span.count { color: #6A9929 }
+#dashboard-widgets .table-cols th.max span { background: #7BA329 }
+
+#form_posts_on_facebook { text-align: center }
+#info-get-data { color:#666; font-size: 11px; margin-left: 10px }
+
+#onglet-widgets .table-list { width: 100% }
+#onglet-widgets .table-list th { text-align: left }
+#onglet-widgets .table-list thead th.comment_count, #onglet-widgets .table-list thead th.facebook_count { text-align: right !important}
+#onglet-widgets .table-list thead th { border-bottom: 1px solid #ECECEC; color: #8F8F8F; font-size: 14px; font-weight: normal }
+#onglet-widgets .table-list tbody th, #onglet-widgets .table-list tbody td { font-weight: normal; padding : 4px }
+#onglet-widgets .table-list tbody td.comment_count, #onglet-widgets .table-list tbody td.facebook_count { text-align: right }
+#onglet-widgets .table-list tbody tr:nth-child(odd) { background: #fff }
+#onglet-widgets .table-list tbody td.number { font-size: 400%; line-height: 2em; text-align: center }
+#onglet-widgets .table-list tbody td.number span { border-right: 1px solid #ccc; display: inline-block; width: 100%; margin: 20px 0 }
+#onglet-widgets .table-list tbody td.number:last-child span { border-right: none }
+
+#onglet-widgets .table-summary tbody td.number { font-size: 350%; line-height: 2em; text-align: center }
+#onglet-widgets .table-summary tbody td.number span { border-right: 1px solid #ccc; display: inline-block; width: 100%; margin: 20px 0 }
+#onglet-widgets .table-summary tbody td.number:last-child span { border-right: none }
+
+#onglet-widgets .table-cols { width: 100%; text-align: center; margin: 0 auto }
+#onglet-widgets .table-cols td.value { vertical-align: bottom; border-bottom: 1px solid #fff }
+#onglet-widgets .table-cols td div.pourcent { background: #ccc; margin: 0 7px; display: block }
+#onglet-widgets .table-cols td span.count { color: #989898; font-weight: bold; display: block; padding: 10px 0; font-size: 18px; margin: 0 7px }
+#onglet-widgets .table-cols th.day { color: #fff; font-weight: bold; text-align: center; width: 14% }
+#onglet-widgets .table-cols th.day span { display: block; margin: 0 7px; padding: 3px 0; background: #A3A3A3 }
+#onglet-widgets .table-cols td.max div.pourcent { background: #9ACD34 }
+#onglet-widgets .table-cols td.max span.count { color: #6A9929 }
+#onglet-widgets .table-cols th.max span { background: #7BA329 }

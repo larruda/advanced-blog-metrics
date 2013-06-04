@@ -1,0 +1,217 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Advanced Blog Metrics v1.4.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2013-06-04 10:03:17+0000\n"
+"Last-Translator: antoine <contact@atalanta.fr>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Generator: CSL v1.x\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Sunday"
+msgstr "Dimanche"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Monday"
+msgstr "Lundi"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Tuesday"
+msgstr "Mardi"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Thursday"
+msgstr "Jeudi"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Friday"
+msgstr "Vendredi"
+
+#: advanced-blog-metrics.php:27
+#@ adv-blog-metrics
+msgid "Saturday"
+msgstr "Samedi"
+
+#: advanced-blog-metrics.php:81
+#: advanced-blog-metrics.php:94
+#: advanced-blog-metrics.php:100
+#: advanced-blog-metrics.php:234
+#@ adv-blog-metrics
+msgid "Settings"
+msgstr "Paramètres"
+
+#: advanced-blog-metrics.php:82
+#@ adv-blog-metrics
+msgid "Starting date"
+msgstr "Date de début"
+
+#: advanced-blog-metrics.php:92
+#: advanced-blog-metrics.php:98
+#: advanced-blog-metrics.php:109
+#@ adv-blog-metrics
+msgid "Advanced Blog Metrics"
+msgstr "Advanced Blog Metrics"
+
+#: advanced-blog-metrics.php:124
+#@ adv-blog-metrics
+msgid "Date format: YYYY-MM-DD"
+msgstr "Format de la date : AAAA-MM-JJ"
+
+#: advanced-blog-metrics.php:125
+#@ adv-blog-metrics
+msgid "If you leave this field empty, Advanced Blog Metrics uses the date of your first post by default."
+msgstr "Si vous laissez ce champ vide, Advanced Blog Metrics utilisera la date de votre 1er article par défaut."
+
+#: advanced-blog-metrics.php:133
+#@ adv-blog-metrics
+msgid "You did not use the expected date format. Please, fill in the starting date with the following format: YYYY-MM-DD"
+msgstr "Vous n'avez pas utilisé le format de date requis. Merci de renseigner la date de départ avec le format suivant : AAAA-MM-JJ"
+
+#: advanced-blog-metrics.php:137
+#@ adv-blog-metrics
+msgid "You have entered a date which does not exist. Please, fill in the starting date with a valid date"
+msgstr "Vous avez entré une date qui n'existe pas. Merci de renseigner une date de début valide."
+
+#: advanced-blog-metrics.php:155
+#: advanced-blog-metrics.php:218
+#@ adv-blog-metrics
+msgid "5 posts which generate the most comments"
+msgstr "5 articles qui génèrent le plus de commentaires"
+
+#: advanced-blog-metrics.php:163
+#: advanced-blog-metrics.php:220
+#@ adv-blog-metrics
+msgid "When do your posts generate the most comments?"
+msgstr "Quand vos articles génèrent-ils le plus de commentaires ?"
+
+#: advanced-blog-metrics.php:171
+#: advanced-blog-metrics.php:222
+#: advanced-blog-metrics.php:245
+#: advanced-blog-metrics.php:403
+#@ adv-blog-metrics
+msgid "Comments"
+msgstr "Commentaires"
+
+#: advanced-blog-metrics.php:179
+#: advanced-blog-metrics.php:224
+#@ adv-blog-metrics
+msgid "5 authors who comment the most"
+msgstr "5 auteurs qui commentent le plus"
+
+#: advanced-blog-metrics.php:187
+#: advanced-blog-metrics.php:226
+#: advanced-blog-metrics.php:446
+#@ adv-blog-metrics
+msgid "Posts"
+msgstr "Articles"
+
+#: advanced-blog-metrics.php:195
+#: advanced-blog-metrics.php:228
+#@ adv-blog-metrics
+msgid "When do you post the most?"
+msgstr "Quand publiez-vous le plus ?"
+
+#: advanced-blog-metrics.php:203
+#: advanced-blog-metrics.php:230
+#@ adv-blog-metrics
+msgid "5 posts which generate the most Facebook shares and likes"
+msgstr "5 articles qui génèrent le plus de J'aime et Partages Facebook"
+
+#: advanced-blog-metrics.php:343
+#: advanced-blog-metrics.php:366
+#@ adv-blog-metrics
+msgid "Approved comments"
+msgstr "Commentaires approuvés"
+
+#: advanced-blog-metrics.php:344
+#: advanced-blog-metrics.php:367
+#@ adv-blog-metrics
+msgid "Comments per Day"
+msgstr "Commentaires par Jour"
+
+#: advanced-blog-metrics.php:345
+#: advanced-blog-metrics.php:368
+#: advanced-blog-metrics.php:448
+#@ adv-blog-metrics
+msgid "Comments per Post"
+msgstr "Commentaires par Article"
+
+#: advanced-blog-metrics.php:346
+#: advanced-blog-metrics.php:369
+#@ adv-blog-metrics
+msgid "Words per Comment"
+msgstr "Mots par Commentaire"
+
+#: advanced-blog-metrics.php:403
+#@ adv-blog-metrics
+msgid "Author"
+msgstr "Auteur"
+
+#: advanced-blog-metrics.php:412
+#@ adv-blog-metrics
+msgid "Note that you need to check \"Users must be registered and logged in to comment\" in the Wordpress Settings->Discussion to see data in the \"5 authors who comments the most\" widget."
+msgstr "Notez que vous devez cocher la case \"Un utilisateur doit être enregistré et connecté pour publier des commentaires\" dans les Réglages -> Discussion de WordPress pour que le widget 5 auteurs qui commentent le plus affiche des données."
+
+#: advanced-blog-metrics.php:412
+#@ adv-blog-metrics
+msgid "View discussion options"
+msgstr "Voir les options de discussion"
+
+#: advanced-blog-metrics.php:447
+#@ adv-blog-metrics
+msgid "Posts per Day"
+msgstr "Articles par Jour"
+
+#: advanced-blog-metrics.php:449
+#@ adv-blog-metrics
+msgid "Words per Post"
+msgstr "Mots par Article"
+
+#: advanced-blog-metrics.php:615
+#@ adv-blog-metrics
+msgid "Get/Update data"
+msgstr "Obtenir / Mettre à jour les données"
+
+#: advanced-blog-metrics.php:616
+#@ adv-blog-metrics
+msgid "(Synchronization may last several minutes depending on the number of posts)"
+msgstr "(La synchronisation peut prendre quelques minutes en fonction du nombre d'articles)"
+
+#: advanced-blog-metrics.php:245
+#: advanced-blog-metrics.php:623
+#: advanced-blog-metrics.php:638
+#@ adv-blog-metrics
+msgid "Post"
+msgstr "Article"
+
+#: advanced-blog-metrics.php:93
+#: advanced-blog-metrics.php:94
+#: advanced-blog-metrics.php:99
+#: advanced-blog-metrics.php:152
+#@ adv-blog-metrics
+msgid "Dashboard"
+msgstr "Tableau de bord"
+

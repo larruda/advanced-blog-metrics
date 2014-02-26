@@ -54,9 +54,9 @@ $queries = array(
     // Total comments approved
     'comments_total'         => "SELECT COUNT(c.comment_ID) AS count FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE comment_approved = '1' AND p.post_date >= '" . $startingdate . "'",
      // Total posts published
-    'posts_total'            => "SELECT COUNT(ID), post_date FROM `" . $wpdb->posts . "` WHERE post_type = 'post' AND post_status = 'publish' AND post_date >= '" . $startingdate . "'",
+    'posts_total'            => "SELECT COUNT(ID) FROM `" . $wpdb->posts . "` WHERE post_type = 'post' AND post_status = 'publish' AND post_date >= '" . $startingdate . "'",
     // Total words per comments approved
-    'comments_word'          => "SELECT SUM(LENGTH(c.comment_content) - LENGTH(REPLACE(c.comment_content, ' ', '')) +1) AS count, p.post_date FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE c.comment_approved = '1' AND p.post_date >= '" . $startingdate . "'",
+    'comments_word'          => "SELECT SUM(LENGTH(c.comment_content) - LENGTH(REPLACE(c.comment_content, ' ', '')) +1) AS count FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE c.comment_approved = '1' AND p.post_date >= '" . $startingdate . "'",
     // 5 authors who comment the most
     'comments_per_author'    => "SELECT u.ID, u.user_login, u.display_name, COUNT(c.comment_ID) AS comment_count FROM `" . $wpdb->comments . "` c LEFT JOIN `" . $wpdb->users . "` u ON c.user_id = u.ID LEFT JOIN `" . $wpdb->posts . "` p ON c.comment_post_ID = p.ID WHERE c.user_id != 0 AND p.post_date >= '" . $startingdate . "' GROUP BY c.user_id ORDER BY comment_count DESC LIMIT 5",
     // Total words per posts approved
